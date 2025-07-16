@@ -1,0 +1,32 @@
+stages:
+  - code-security-check
+  - defect-dojo
+
+include:
+  # Security Checks
+  - component: $CI_SERVER_FQDN/root/scanners/semgrep@develop
+    inputs:
+      rules:
+        - if: $CI_COMMIT_BRANCH == "main"
+      semgrep_config: "/opt/semgrep-rules-c --severity ERROR --severity WARNING"
+  - component: $CI_SERVER_FQDN/root/scanners/trufflehog@develop
+    inputs:
+      rules:
+        - if: $CI_COMMIT_BRANCH == "main"
+  - component: $CI_SERVER_FQDN/root/scanners/infer@develop
+    inputs:
+      rules:
+        - if: $CI_COMMIT_BRANCH == "main"
+  - component: $CI_SERVER_FQDN/root/scanners/clang@develop
+    inputs:
+      rules:
+        - if: $CI_COMMIT_BRANCH == "main"
+  - component: $CI_SERVER_FQDN/root/scanners/cppcheck@develop
+    inputs:
+      rules:
+        - if: $CI_COMMIT_BRANCH == "main"
+  # Upload reports to DefectDojo
+  - component: $CI_SERVER_FQDN/root/defect-dojo/defect-dojo@develop
+    inputs:
+      product_name: 'cpp-sast-2'
+      api_key: $DEFECT_DOJO_API_KEY   
